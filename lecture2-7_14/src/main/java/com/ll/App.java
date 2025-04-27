@@ -28,6 +28,14 @@ public class App {
 
                     System.out.printf("%d번 할일이 생성되었습니다.\n", id);
                 }
+                else if (cmd.equals("list")) {
+                    System.out.println("번호 / 내용");
+
+                    for (Todo todo : todos) {
+                        System.out.printf("%d / %s\n", todo.getId(), todo.getContent());
+                    }
+                    // todos.forEach(todo -> System.out.printf("%d / %s\n", todo.getId(), todo.getContent()));
+                }
             }
         }
 
