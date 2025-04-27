@@ -36,6 +36,19 @@ public class App {
                     }
                     // todos.forEach(todo -> System.out.printf("%d / %s\n", todo.getId(), todo.getContent()));
                 }
+                else if (cmd.equals("del")) {
+                    System.out.print("삭제할 할일의 번호 : ");
+                    long id = Long.parseLong(sc.nextLine().trim());
+
+                    boolean isRemoved = todos.removeIf(todo -> todo.getId() == id);
+
+                    if (!isRemoved) {
+                        System.out.printf("%d번 할일은 존재하지 않습니다.\n", id);
+                        continue;
+                    }
+
+                    System.out.printf("%d번 할일이 삭제되었습니다.\n", id);
+                }
             }
         }
 
