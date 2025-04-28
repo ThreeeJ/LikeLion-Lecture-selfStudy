@@ -49,6 +49,28 @@ public class App {
 
                     System.out.printf("%d번 할일이 삭제되었습니다.\n", id);
                 }
+                else if (cmd.equals("modify")) {
+                    System.out.print("수정할 할일의 번호 : ");
+                    long id = Long.parseLong(sc.nextLine().trim());
+
+                    Todo foundTodo = todos.stream()
+                            .filter(t -> t.getId() == id)
+                            .findFirst()
+                            .orElse(null);
+                    // 해당 리스트에서 조건식의 결과가 참인 요소를 하나만 반환하고,
+                    // 없다면 null을 반환
+
+                    if (foundTodo == null) {
+                        System.out.printf("%d번 할일은 존재하지 않습니다.\n", id);
+                        continue;
+                    }
+
+                    System.out.printf("기존 할일 : %s\n", foundTodo.getContent());
+                    System.out.print("새 할일 : ");
+                    foundTodo.setContent(sc.nextLine().trim());
+
+                    System.out.printf("%d번 할일이 수정되었습니다.\n", id);
+                }
             }
         }
 
