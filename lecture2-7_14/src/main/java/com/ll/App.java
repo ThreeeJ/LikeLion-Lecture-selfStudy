@@ -33,6 +33,7 @@ public class App {
         }
 
         System.out.println("할일 관리 앱, 끝");
+        sc.close();
     }
 
     private void add() {
