@@ -1,10 +1,13 @@
 package com.ll.lecture3;
 
+import lombok.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,28 +27,13 @@ public class HomeController {
         return "%s번 사람의 나이는 %s살 입니다.".formatted(age, id);
     }
 
-    // 해당 메서드는 브라우저를 통해 호출 가능해집니다.
-    // -> 이런 것을 "액션 메서드" 라고 부른다.
     @GetMapping("b")
     public void hello2() {
         System.out.println("Hello2!");
     }
 
-    @GetMapping("c") // 액션 메서드 -> 요청(편지(글))에 의해서 실행
+    @GetMapping("c")
     @ResponseBody
-//  - XML과 JSON
-//      - String으로 객체를 표현하는 방법에 대한 표준이 보통 XML과 JSON이 있는데 JSON을 많이 사용
-//      - XML보단 JSON이 간단함.
-//
-//  - 스프링부트
-//      - String => 자바객체
-//          - 글 => 생각
-//      - 자바객체 => String
-//          - 생각 => 글
-//
-//  - Jackson
-//      - Jackson은 액션 메서드가 String 이외의 형태의 데이터를 리턴하면,
-//      - String 형태(그 중에서 JSON 방식)로 변경
     public String plus(
             @RequestParam("a") int num1,
             @RequestParam("b") int num2,
@@ -61,11 +49,7 @@ public class HomeController {
 
     @GetMapping("d")
     @ResponseBody
-    public String d(
-            boolean married
-            // Jackson이 알아서 String을 자바 자료구조로 바꿔줌
-            // boolean일 때 값이 없으면 기본값은 fasle
-    ) {
+    public String d(boolean married) {
         return married ? "결혼" : "미혼";
     }
 
@@ -80,39 +64,14 @@ public class HomeController {
         return married ? "결혼" : "미혼";
     }
 
-
+    @Getter
+    @Setter
+    @ToString
+    @AllArgsConstructor // lombok : 소스코드를 줄여줌
     public static class Person {
+
         private String name;
         private int age;
-
-        public Person(String name, int age) {
-            this.name = name;
-            this.age = age;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public void setName(String name) {
-            this.name = name;
-        }
-
-        public int getAge() {
-            return age;
-        }
-
-        public void setAge(int age) {
-            this.age = age;
-        }
-
-        @Override
-        public String toString() {
-            return "Person{" +
-                    "name='" + name + '\'' +
-                    ", age=" + age +
-                    '}';
-        }
     }
 
     @GetMapping("person1")
@@ -122,31 +81,24 @@ public class HomeController {
             int age
     ) {
         Person person = new Person(name, age);
-
         return person.toString();
     }
 
     @GetMapping("person2")
     @ResponseBody
-    public String person2(
-            Person person
-            // 스프링부트가 Jackson을 이용해서 "알아서"
-            // 정보들을 모아가지고, 객체로 만들어줌.
-    ) {
+    public String person2(Person person) {
         return person.toString();
     }
 
     @GetMapping("f")
     @ResponseBody
-    public int f(
-    ) {
+    public int f() {
         return 10;
     }
 
     @GetMapping("g")
     @ResponseBody
-    public boolean g(
-    ) {
+    public boolean g() {
         return true;
     }
 
@@ -161,7 +113,6 @@ public class HomeController {
     @ResponseBody
     public boolean i() {
         boolean married = true;
-
         return married;
     }
 
@@ -169,7 +120,6 @@ public class HomeController {
     @ResponseBody
     public Person j() {
         Person person = new Person("Paul", 25);
-
         return person; // json
     }
 
@@ -177,25 +127,129 @@ public class HomeController {
     @ResponseBody
     public int[] k() {
         int[] arr = new int[] {10, 20, 30};
-
         return arr; // json
     }
 
-    @GetMapping("l")
+    @GetMapping("l") // list 반환
     @ResponseBody
     public List<Integer> l() {
         List<Integer> arr = List.of(40, 50, 60);
-
         return arr; // json
     }
 
-    @GetMapping("m")
+    @GetMapping("m") // Map 반환
     @ResponseBody
     public Map<String, Object> m() {
         Map<String, Object> person = new HashMap<>();
         person.put("age", 23);
         person.put("name", "Paul");
-
         return person; // json
+    }
+
+    @AllArgsConstructor
+    @Getter
+    @Builder
+    @ToString
+    //@EqualsAndHashCode(onlyExplicitlyIncluded = true) : Post라는 객체 비교할 때 Include 들어간 애들만 확인
+    public static class Post {
+        //@ToString.Exclude : 출력할 때 id는 제외
+        //@JsonIgnore : json 형식으로 반환할 때 id는 제외
+        //@EqualsAndHashCode.Include : id만 비교해서 같으면 같은 객체
+        private Long id;
+        private LocalDateTime createDate;
+        private LocalDateTime modifyDate;
+        @Builder.Default
+        private String subject = "제목 입니다.";
+        private String body;
+    }
+
+    @GetMapping("/posts1")
+    @ResponseBody
+    public List<Post> getPosts1() {
+        List<Post> posts = new ArrayList<>() {{
+            add(new Post(1L, LocalDateTime.now(), LocalDateTime.now(), "제목 1", "내용 1"));
+            add(new Post(2L, LocalDateTime.now(), LocalDateTime.now(), "제목 2", "내용 2"));
+            add(new Post(3L, LocalDateTime.now(), LocalDateTime.now(), "제목 3", "내용 3"));
+            add(new Post(4L, LocalDateTime.now(), LocalDateTime.now(), "제목 4", "내용 4"));
+            add(new Post(5L, LocalDateTime.now(), LocalDateTime.now(), "제목 5", "내용 5"));
+        }};
+
+        return posts;
+    }
+
+    @GetMapping("/posts2")
+    @ResponseBody
+    public List<Post> getPosts2() {
+        List<Post> posts = new ArrayList<>() {{
+            add(
+                    Post // 순서를 바꿔도 되는 장점이 있음. 조금 더 유연한 표현
+                            .builder()
+                            .id(1L)
+                            .createDate(LocalDateTime.now())
+                            .modifyDate(LocalDateTime.now())
+                            .subject("제목 1")
+                            .body("내용 1")
+                            .build()
+            );
+            add(
+                    Post // 순서를 바꿔도 되는 장점이 있음. 조금 더 유연한 표현
+                            .builder()
+                            .id(2L)
+                            .createDate(LocalDateTime.now())
+                            .modifyDate(LocalDateTime.now())
+                            .subject("제목 2")
+                            .body("내용 2")
+                            .build()
+            );
+            add(
+                    Post // 순서를 바꿔도 되는 장점이 있음. 조금 더 유연한 표현
+                            .builder()
+                            .id(3L)
+                            .createDate(LocalDateTime.now())
+                            .modifyDate(LocalDateTime.now())
+
+                            .body("내용 3")
+                            .build()
+            );
+        }};
+
+        return posts;
+    }
+
+    @GetMapping("/posts/1")
+    @ResponseBody
+    public Post getPosts_1() {
+        Post post = Post // 순서를 바꿔도 되는 장점이 있음. 조금 더 유연한 표현
+                .builder()
+                .id(1L)
+                .createDate(LocalDateTime.now())
+                .modifyDate(LocalDateTime.now())
+                .subject("제목 1")
+                .body("내용 1")
+                .build();
+
+        System.out.println(post);
+
+        return post;
+    }
+
+    @SneakyThrows
+    @GetMapping("/posts/2")
+    @ResponseBody
+    public Post getPosts_2() {
+        Post post = Post // 순서를 바꿔도 되는 장점이 있음. 조금 더 유연한 표현
+                .builder()
+                .id(2L)
+                .createDate(LocalDateTime.now())
+                .modifyDate(LocalDateTime.now())
+                .subject("제목 2")
+                .body("내용 2")
+                .build();
+
+        Thread.sleep(5000);
+
+        System.out.println(post);
+
+        return post;
     }
 }
