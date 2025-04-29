@@ -66,4 +66,33 @@ public class TodoController {
 
         return todo;
     }
+
+    @GetMapping("/remove/{id}") // 삭제
+    public boolean remove(
+            @PathVariable long id
+    ) {
+        boolean removed = todos.removeIf((todo -> todo.getId() == id));
+
+        return removed;
+    }
+
+    @GetMapping("/modify/{id}") // 수정
+    public boolean modify(
+            @PathVariable long id,
+            String body
+    ) {
+        Todo todo = todos
+                .stream()
+                .filter(
+                        _todo -> _todo.getId() == id
+                )
+                .findFirst()
+                .orElse(null);
+
+        if (todo == null) return false;
+
+        todo.setBody(body);
+
+        return true;
+    }
 }
