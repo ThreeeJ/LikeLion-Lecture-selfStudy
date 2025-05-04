@@ -1,0 +1,10 @@
+# 도커 생성
+- "docker build -t nginx-1 ."
+- 위 명령은 "docker build -t nginx-1:latest ." 와 같다. 
+
+# 생성된 도커 이미지 확인
+- "docker images"
+
+# 도커 삭제
+- "docker rmi nginx-1"
+- 위 명령은 "docker rmi nginx-1:latest ." 와 같다.
